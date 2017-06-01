@@ -107,7 +107,7 @@ for row in m:
     mm.append(rowprob)
     
 statehold=[0]*len(mm)
-while sum(mm[0])>1e-10:
+while sum(mm[0])>1e-20:
     print(sum(mm[0]))
 
     for i, row in enumerate(mm):
@@ -121,12 +121,12 @@ while sum(mm[0])>1e-10:
                 else:
                     mm[j]=[value*k for k in mm[j]]
 #                    print (i,j,[value*k for k in mm[j]])
-    print(statehold,'sum',sum(statehold))
+    print(statehold,'sum',sum(statehold),sum(mm[0])+sum(statehold))
     
 
 
 fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in statehold[2:len(statehold)]]
-# print(fraclevels)    
+print(fraclevels)    
 fracdom=[i.denominator for i in fraclevels]
 # print(fracdom)
 commonmult=0
