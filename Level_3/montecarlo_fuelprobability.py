@@ -62,97 +62,94 @@ Inputs:
 Output:
     (int list) [0, 3, 2, 9, 14]
 '''
-# m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
+
+
+## This implementation useds montecarlo simulation. It works perfectly well but google foobar doesn't allow for random variables for some reason.
+
+m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+# m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
 
 # print(m)
 
 
-    #for num in row:
+# for i, row in enumerate(m):
     
-    #print(rowsum)
+import os
+
+def randint(a,b):
+    return int(os.urandom(4).encode('hex'),16)%(b-a+1)+a
+
+# for row in m:
+#     rowprob=[]
+#     rowsum=sum(row)
+#     for i in row:
+#         if rowsum == 0:
+#             rowprob.append(0)
+#         else:
+#             rowprob.append(float(i)/rowsum)
+# #     print(rowprob)
+#     mm.append(rowprob)
+#     #for num in row:
+#     
+#     #print(rowsum)
 
 # print(mm)
 #def answer(m):m
-##lol montecarlo simulation, because I'm an idiot - figure out the elegant way one day.
-import fractions
 
-def mygcd(a, b):
-    """Calculate the Greatest Common Divisor of a and b.
-
-    Unless b==0, the result will have the same sign as b (so that when
-    b is divided by it, the result comes out positive).
-    """
-    while b:
-        a, b = b, a%b
-    return a
-  
-def allgcd(L):
-    return reduce(fractions.gcd, L)
 
 # import random
-# def answer(m):
-  
+import fractions    
+def answer(m):
 
-mm=[]
-for row in m:
-    rowprob=[]
-    rowsum=sum(row)
-    for i in row:
-        if rowsum == 0:
-            rowprob.append(0)
-        else:
-            rowprob.append(float(i)/rowsum)
-
-    mm.append(rowprob)
-    
-statehold=[0]*len(mm)
-while sum(mm[0])>1e-10:
-    print(sum(mm[0]))
-
-    for i, row in enumerate(mm):
-        for j, value in enumerate(row):
-#             print(mm[j])
-            if value == 0:
-                continue
-            else:
-                if sum(mm[j])==0:
-                    statehold[j]+=value
+    mm=[]
+    photonbins=[0]*len(m)
+    numphotons=100000
+    for photon in xrange(numphotons):
+    #     print('photonnumber:',photon)
+        photonexist=1
+        prow=0
+        while photonexist == 1:
+    #         print('photonexist?',photonexist)
+            for i, row in enumerate(m):
+    #             print('rownum:',i)
+                if prow == i:
+                    rowsum=sum(row)
+    #                 print('Rowsums:',prow,rowsum)
+                    if rowsum == 0:
+                        photonbins[i]+=1
+                        photonexist = 0
+    #                     print('photon terminated!',photon,i)
+                    else:
+                        prand=randint(1,rowsum)
+                        cumsum=0
+    #                     print('randint:',prand)
+                        for nextrow, j in enumerate(row):
+                            cumsum+=j
+    #                         print('cumulativesum:',row,j,cumsum)
+                            if prand <= cumsum:
+                                prow=nextrow
+    #                             print('nextrow:',i,prow,j,cumsum)
+                                break
                 else:
-                    mm[j]=[value*k for k in mm[j]]
-#                    print (i,j,[value*k for k in mm[j]])
-    print(statehold,'sum',sum(statehold))
-    
+                    continue
 
 
-fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in statehold[2:len(statehold)]]
-# print(fraclevels)    
-fracdom=[i.denominator for i in fraclevels]
-# print(fracdom)
-commonmult=0
-for i, value in enumerate(fraclevels):
-    if i ==0:
-        commonmult=value
-    else:
-        commonmult=fractions.gcd(commonmult,value)
-        
-# print(commonmult)
-    
+#     print(photonbins)
 
+    estimates=[(i/float(numphotons)) for i in photonbins]
 
-#     commonmult=mygcd(
-#     commonmult=reduce(lambda x, y:fractions.gcd(x,y),fraclevels)
-#     print commonmult
-#     commonmult=allgcd(fraclevels.denominator)
+#     print(estimates)
 
-numerators=[i.numerator for i in fraclevels]
+    fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in estimates[2:len(estimates)]]
+#     print(fraclevels)
+    commonmult=reduce(lambda x, y:fractions.gcd(x,y),fraclevels)
 
-denommults=[commonmult.denominator/i.denominator for i in fraclevels]
+    numerators=[i.numerator for i in fraclevels]
 
-finallist=[a*b for a,b in zip(numerators,denommults)]
-finallist.append(commonmult.denominator)
-print(finallist)
-# return finallist
+    denommults=[commonmult.denominator/i.denominator for i in fraclevels]
 
-
-# print(answer(m))
+    finallist=[a*b for a,b in zip(numerators,denommults)]
+    finallist.append(commonmult.denominator)
+    return finallist
+# print(finallist)
+print(answer(m))
