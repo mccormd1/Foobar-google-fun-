@@ -63,7 +63,8 @@ Output:
     (int list) [0, 3, 2, 9, 14]
 '''
 # m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
+# m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
+m=[[0, 2, 1, 0, 0], [0, 1, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
 # print(m)
 
@@ -73,86 +74,103 @@ m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0,
     #print(rowsum)
 
 # print(mm)
-#def answer(m):m
-##lol montecarlo simulation, because I'm an idiot - figure out the elegant way one day.
-import fractions
+def answer(m):
+    ##lol montecarlo simulation, because I'm an idiot - figure out the elegant way one day.
+    import fractions
 
-def mygcd(a, b):
-    """Calculate the Greatest Common Divisor of a and b.
+    def mygcd(a, b):
+        """Calculate the Greatest Common Divisor of a and b.
 
-    Unless b==0, the result will have the same sign as b (so that when
-    b is divided by it, the result comes out positive).
-    """
-    while b:
-        a, b = b, a%b
-    return a
+        Unless b==0, the result will have the same sign as b (so that when
+        b is divided by it, the result comes out positive).
+        """
+        while b:
+            a, b = b, a%b
+        return a
   
-def allgcd(L):
-    return reduce(fractions.gcd, L)
+    def allgcd(L):
+        return reduce(fractions.gcd, L)
 
-# import random
-# def answer(m):
+    # import random
+    # def answer(m):
   
 
-mm=[]
-for row in m:
-    rowprob=[]
-    rowsum=sum(row)
-    for i in row:
-        if rowsum == 0:
-            rowprob.append(0)
-        else:
-            rowprob.append(float(i)/rowsum)
-
-    mm.append(rowprob)
-    
-statehold=[0]*len(mm)
-while sum(mm[0])>1e-20:
-    print(sum(mm[0]))
-
-    for i, row in enumerate(mm):
-        for j, value in enumerate(row):
-#             print(mm[j])
-            if value == 0:
-                continue
+    mm=[]
+    for row in m:
+        rowprob=[]
+        rowsum=sum(row)
+        for i in row:
+            if rowsum == 0:
+                rowprob.append(0)
             else:
-                if sum(mm[j])==0:
-                    statehold[j]+=value
+                rowprob.append(float(i)/rowsum)
+
+        mm.append(rowprob)
+
+    mma=list(mm)
+    mmb=list(mm)
+    statehold=[0]*len(mm)
+
+    # print(sum(remain))
+#     while sum(statehold)<1.0-1e-10:
+    for ii in range(10):
+    #     print(sum(remain))
+
+        if sum(statehold) >1-1e-10:
+            break
+        for A, row in enumerate(mma):
+    #         print('row',row)
+            for X, value in enumerate(row):
+    #             print(mm[X])
+                if value == 0:
+                    continue
                 else:
-                    mm[j]=[value*k for k in mm[j]]
-#                    print (i,j,[value*k for k in mm[j]])
-    print(statehold,'sum',sum(statehold),sum(mm[0])+sum(statehold))
-    
-
-
-fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in statehold[2:len(statehold)]]
-print(fraclevels)    
-fracdom=[i.denominator for i in fraclevels]
-# print(fracdom)
-commonmult=0
-for i, value in enumerate(fraclevels):
-    if i ==0:
-        commonmult=value
-    else:
-        commonmult=fractions.gcd(commonmult,value)
+                    if sum(mm[X])==0:
+                        statehold[X]+=value
+    #                     holdval[X]=value
+    #                     print('hold',holdval)
+                    else:
+    #                     print('mma',mma)
+                        print(A,row,X,value)
+    #                   
+                        mmb[X]=[value*k for k in mm[X]]
+    #                     mma[X]=[k/sum(mma[X]) for k in mma[X]]
+    #                     print (A,X,mma)
+    #     remain[i]=sum([ab for a,b in zip(mm[j],mmk[j])])
+                mma[X]=mmb[X]
+    #     remain=
         
-# print(commonmult)
+        print('\n',statehold,'sum',sum(statehold),'\n')
+
+    # print(mm,mma)
+    fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in statehold[2:len(statehold)]]
+    print(fraclevels)    
+    fracdom=[i.denominator for i in fraclevels]
+    print(fracdom)
+    commonmult=0
+    for i, value in enumerate(fraclevels):
+        if i ==0:
+            commonmult=value
+        else:
+            commonmult=fractions.gcd(commonmult,value)
+        
+    # print(commonmult)
     
 
 
-#     commonmult=mygcd(
-#     commonmult=reduce(lambda x, y:fractions.gcd(x,y),fraclevels)
-#     print commonmult
-#     commonmult=allgcd(fraclevels.denominator)
+    #     commonmult=mygcd(
+    #     commonmult=reduce(lambda x, y:fractions.gcd(x,y),fraclevels)
+    #     print commonmult
+    #     commonmult=allgcd(fraclevels.denominator)
 
-numerators=[i.numerator for i in fraclevels]
+    numerators=[i.numerator for i in fraclevels]
 
-denommults=[commonmult.denominator/i.denominator for i in fraclevels]
+    denommults=[commonmult.denominator/i.denominator for i in fraclevels]
 
-finallist=[a*b for a,b in zip(numerators,denommults)]
-finallist.append(commonmult.denominator)
-print(finallist)
-# return finallist
+    finallist=[int(a*b) for a,b in zip(numerators,denommults)]
+    finallist.append(commonmult.denominator)
+    # print(finallist)
+    return finallist
 
 
-# print(answer(m))
+print(answer(m))
