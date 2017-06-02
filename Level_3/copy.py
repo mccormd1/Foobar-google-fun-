@@ -143,134 +143,126 @@ def matmult(A,B):
 
 
 
-# def answer(m):
+def answer(m):
 
-#sort rows
-
-
-
-
-mmm=list(m)
-hrowsum=[]
-for i, row in enumerate(mmm):
-    hrowsum.append(sum(row))
+    #sort rows
+    mmm=list(m)
+    rowsum=[]
+    for i, row in enumerate(mmm):
+        rowsum.append(sum(row))
 
 
 
-for i,row in enumerate(mmm):
-    if hrowsum[i]==0:
-        mmm.append(mmm.pop(i))
-    for j in range(len(row)):
-        if hrowsum[j]==1:
-           mmm[i].append(mmm[i].pop(j))
+    for i,row in enumerate(mmm):
+        if rowsum[i]==0:
+            mmm.append(mmm.pop(i))
+        for j in range(len(row)):
+            if rowsum[j]==1:
+               mmm[i].append(mmm[i].pop(j))
 
 
-# print(mmm)
+    print(mmm)
 
-mm=[]   #convert into percentages
-for row in mmm:
-    rowprob=[]
-    rowsum=sum(row)
-    for i in row:
-        if rowsum == 0:
-            rowprob.append(0)
-        else:
-            rowprob.append((float(i)/rowsum))
+    mm=[]   #convert into percentages
+    for row in mmm:
+        rowprob=[]
+        rowsum=sum(row)
+        for i in row:
+            if rowsum == 0:
+                rowprob.append(0)
+            else:
+                rowprob.append((float(i)/rowsum))
     
-    mm.append(rowprob)
+        mm.append(rowprob)
     
 
 
-# print(mm)
-##first create absorbing states by setting self referencing value in full zero rows to 1
-Imark=[None]*len(m)
-Qmark=[None]*len(m)
-for i, row in enumerate(mm):
-    rowsum=sum(row)
-#     print(rowsum)
-    if rowsum ==0:
-#         print(m[i],i)
-        mm[i][i]=1
-        Imark[i]=1
+    print(mm)
+    ##first create absorbing states by setting self referencing value in full zero rows to 1
+    Imark=[None]*len(m)
+    Qmark=[None]*len(m)
+    for i, row in enumerate(mm):
+        rowsum=sum(row)
+    #     print(rowsum)
+        if rowsum ==0:
+    #         print(m[i],i)
+            mm[i][i]=1
+            Imark[i]=1
         
+        else:
+            Qmark[i]=1
+
+    print (mm,Qmark,Imark)
+
+
+
+    ## list should be a version of the standard form p=[Q, R],[0 It] 
+    # '''
+    # [
+    #   [0,1,|0,0,0,1],  
+    #   [4,0,|0,3,2,0],
+    #   -------------  
+    #   [0,0,|1,0,0,0],  
+    #   [0,0,|0,1,0,0],  
+    #   [0,0,|0,0,1,0],  
+    #   [0,0,|0,0,0,1],  
+    # ]
+    # '''
+    ##split the matrix into it's parts (only need Q right now)
+
+    QR=[mm[i] for i, a in enumerate(Qmark) if a==1]
+    Q=[[0]*Qmark.count(1) for i, a in enumerate(Qmark) if a==1]
+    R=[[0]*Imark.count(1) for i, a in enumerate(Qmark) if a==1]
+    I=list(Q)
+
+    for i, row in enumerate(QR):
+        Q[i]=[QR[i][j] for j, a in enumerate(Qmark) if a==1]
+        R[i]=[QR[i][j] for j, a in enumerate(Imark) if a==1]
+
+    # print('R is:',R)
+    # Q=[QR[i]
+    # I=[m[i][i] for i, a in enumerate(Imark) if a==1]
+
+    # Create identity same size as Q
+    for i in range(Qmark.count(1)):
+        I[i][i] = 1.0
+
+    # print('Q is:',Q,I)
+    ## the fundamental matrix F=(I-Q)^-1, lets get I-Q first. different I than above.
+
+    IQ=matsub(I,Q)
+    F=getMatrixInverse(IQ)  #invert the matrix
+    # print(F)
+
+    FR=matmult(F,R) #matmultiply F by R
+    if FR ==0:
+#         pass
+        return 0
     else:
-        Qmark[i]=1
+        k=FR[0]
+    print(k,len(FR),len(FR[0]))
 
-# print (mm,Qmark,Imark)
-
-
-
-## list should be a version of the standard form p=[Q, R],[0 It] 
-# '''
-# [
-#   [0,1,|0,0,0,1],  
-#   [4,0,|0,3,2,0],
-#   -------------  
-#   [0,0,|1,0,0,0],  
-#   [0,0,|0,1,0,0],  
-#   [0,0,|0,0,1,0],  
-#   [0,0,|0,0,0,1],  
-# ]
-# '''
-##split the matrix into it's parts (only need Q right now)
-
-QR=[mm[i] for i, a in enumerate(Qmark) if a==1]
-Q=[[0]*Qmark.count(1) for i, a in enumerate(Qmark) if a==1]
-R=[[0]*Imark.count(1) for i, a in enumerate(Qmark) if a==1]
-I=list(Q)
-
-for i, row in enumerate(QR):
-    Q[i]=[QR[i][j] for j, a in enumerate(Qmark) if a==1]
-    R[i]=[QR[i][j] for j, a in enumerate(Imark) if a==1]
-
-# print('R is:',R)
-# Q=[QR[i]
-# I=[m[i][i] for i, a in enumerate(Imark) if a==1]
-
-# Create identity same size as Q
-for i in range(Qmark.count(1)):
-    I[i][i] = 1.0
-
-# print('Q is:',Q,I)
-## the fundamental matrix F=(I-Q)^-1, lets get I-Q first. different I than above.
-
-IQ=matsub(I,Q)
-F=getMatrixInverse(IQ)  #invert the matrix
-# print(F)
-
-FR=matmult(F,R) #matmultiply F by R
-if FR ==0:
-    pass
-#     return 0 THIS NEEDS TO BE THERE FOR SOME FUCKING REASON
-else:
-    k=FR[0]
-# print(k,len(FR),len(FR[0]))
-
-#     fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in FR[0]]
-fraclevels=[]
-for i in FR[0]:
-    fraclevels.append(fractions.Fraction(i).limit_denominator(27))
+    #     fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in FR[0]]
+    fraclevels=[]
+    for i in FR[0]:
+        fraclevels.append(fractions.Fraction(i).limit_denominator(27))
     
-# print(fraclevels)
+    # print(fraclevels)
 
-commonmult=0
-for i, value in enumerate(fraclevels):
-    if i ==0:
-        commonmult=value
-    else:
-        commonmult=fractions.gcd(commonmult,value)
+    commonmult=0
+    for i, value in enumerate(fraclevels):
+        if i ==0:
+            commonmult=value
+        else:
+            commonmult=fractions.gcd(commonmult,value)
     
-numerators=[i.numerator for i in fraclevels]
+    numerators=[i.numerator for i in fraclevels]
 
-denommults=[commonmult.denominator/i.denominator for i in fraclevels]
+    denommults=[commonmult.denominator/i.denominator for i in fraclevels]
 
-finallist=[int(a*b) for a,b in zip(numerators,denommults)]
-if len(finallist
+    finallist=[int(a*b) for a,b in zip(numerators,denommults)]
+    finallist.append(commonmult.denominator)
+#     print(finallist)
+    return finallist
 
-finallist.append(commonmult.denominator)
-
-
-print(finallist,hrowsum)
-# return finallist
-
-# print(answer(m))
+print(answer(m))
