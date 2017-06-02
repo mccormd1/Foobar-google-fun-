@@ -63,12 +63,170 @@ Output:
     (int list) [0, 3, 2, 9, 14]
 '''
 
-
 ## This implementation useds montecarlo simulation. It works perfectly well but google foobar doesn't allow for random variables for some reason.
 
-# m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 # m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
-m=[[0, 2, 1, 0, 0], [0, 1, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+# m=[[0, 2, 1, 0, 0], [0, 1, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
-# print(m)
+import fractions
+## need to define a bunch of matrix stuff.
+def matsub(A,B): #performs matrix subtraction
+    for i, row in enumerate(A):
+        A[i]=[A[i][j]-B[i][j] for j,v in enumerate(row)]
+    return A
 
+def transposeMatrix(m):
+    t = []
+    for r in range(len(m)):
+        tRow = []
+        for c in range(len(m[r])):
+            if c == r:
+                tRow.append(m[r][c])
+            else:
+                tRow.append(m[c][r])
+        t.append(tRow)
+    return t
+
+def getMatrixMinor(m,i,j):
+    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
+
+def getMatrixDeternminant(m):
+    #base case for 2x2 matrix
+    if len(m) == 2:
+        return m[0][0]*m[1][1]-m[0][1]*m[1][0]
+
+    determinant = 0
+    for c in range(len(m)):
+        determinant += ((-1)**c)*m[0][c]*getMatrixDeternminant(getMatrixMinor(m,0,c))
+    return determinant
+
+def getMatrixInverse(m):
+    determinant = getMatrixDeternminant(m)
+    #special case for 2x2 matrix:
+    if len(m) == 2:
+        return [[m[1][1]/determinant, -1*m[0][1]/determinant],
+                [-1*m[1][0]/determinant, m[0][0]/determinant]]
+
+    #find matrix of cofactors
+    cofactors = []
+    for r in range(len(m)):
+        cofactorRow = []
+        for c in range(len(m)):
+            minor = getMatrixMinor(m,r,c)
+            cofactorRow.append(((-1)**(r+c)) * getMatrixDeternminant(minor))
+        cofactors.append(cofactorRow)
+    cofactors = transposeMatrix(cofactors)
+    for r in range(len(cofactors)):
+        for c in range(len(cofactors)):
+            cofactors[r][c] = cofactors[r][c]/determinant
+    return cofactors           
+
+
+def matmult(A,B):
+    
+    m=[]
+    for ar in range(len(A)):
+        t=[]
+        for bc in range(len(B[0])):
+            trow=[]
+            for ac in range(len(A[ar])):
+                trow.append(A[ar][ac]*B[ac][bc])
+            t.append(sum(trow))
+        m.append(t)
+    return m
+
+# def answer(m):
+mm=[]   #convert into percentages
+for row in m:
+    rowprob=[]
+    rowsum=sum(row)
+    for i in row:
+        if rowsum == 0:
+            rowprob.append(0)
+        else:
+            rowprob.append((float(i)/rowsum))
+
+    mm.append(rowprob)
+print(mm)
+
+##first create absorbing states by setting self referencing value in full zero rows to 1
+Imark=[None]*len(m)
+Qmark=[None]*len(m)
+for i, row in enumerate(mm):
+    rowsum=sum(row)
+#     print(rowsum)
+    if rowsum ==0:
+#         print(m[i],i)
+        mm[i][i]=1
+        Imark[i]=1
+    else:
+        Qmark[i]=1
+
+# print (mm,Qmark,Imark)        
+## list should be a version of the standard form p=[Q, R],[0 It] 
+'''
+[
+  [0,1,|0,0,0,1],  
+  [4,0,|0,3,2,0],
+  -------------  
+  [0,0,|1,0,0,0],  
+  [0,0,|0,1,0,0],  
+  [0,0,|0,0,1,0],  
+  [0,0,|0,0,0,1],  
+]
+'''
+##split the matrix into it's parts (only need Q right now)
+
+QR=[mm[i] for i, a in enumerate(Qmark) if a==1]
+Q=[[0]*Qmark.count(1) for i, a in enumerate(Qmark) if a==1]
+R=[[0]*Imark.count(1) for i, a in enumerate(Qmark) if a==1]
+I=list(Q)
+
+for i, row in enumerate(QR):
+    Q[i]=[QR[i][j] for j, a in enumerate(Qmark) if a==1]
+    R[i]=[QR[i][j] for j, a in enumerate(Imark) if a==1]
+
+# print('R is:',R)
+# Q=[QR[i]
+# I=[m[i][i] for i, a in enumerate(Imark) if a==1]
+
+# Create identity same size as Q
+for i in range(Qmark.count(1)):
+    I[i][i] = 1.0
+
+# print('Q is:',Q,I)
+## the fundamental matrix F=(I-Q)^-1, lets get I-Q first. different I than above.
+
+IQ=matsub(I,Q)
+F=getMatrixInverse(IQ)  #invert the matrix
+# print(F)
+
+FR=matmult(F,R) #matmultiply F by R
+k=FR[0]
+print(k)
+
+#     fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in FR[0]]
+fraclevels=[]
+for i in FR[0]:
+    fraclevels.append(fractions.Fraction(i).limit_denominator(27))
+    
+# print(fraclevels)
+
+commonmult=0
+for i, value in enumerate(fraclevels):
+    if i ==0:
+        commonmult=value
+    else:
+        commonmult=fractions.gcd(commonmult,value)
+    
+numerators=[i.numerator for i in fraclevels]
+
+denommults=[commonmult.denominator/i.denominator for i in fraclevels]
+
+finallist=[int(a*b) for a,b in zip(numerators,denommults)]
+finallist.append(commonmult.denominator)
+print(finallist)
+# return finallist
+
+# print(answer(m))
