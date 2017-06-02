@@ -64,7 +64,7 @@ Output:
 '''
 
 
-## This implementation uses a iterative update method but fails at self referential states. matrix method is next
+## This implementation useds montecarlo simulation. It works perfectly well but google foobar doesn't allow for random variables for some reason.
 
 # m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 # m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
@@ -72,82 +72,3 @@ m=[[0, 2, 1, 0, 0], [0, 1, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0,
 
 # print(m)
 
-
- #    
-import os
-
-# def randint(a,b):
-#     return int(os.urandom(4).encode('hex'),16)%(b-a+1)+a
-
-# def lcg(seed=None): ##LCGs are bad for monte carlo
-#     if seed!=None:
-#         lcg.previous=seed
-#     rn= (25214903917 *lcg.previous+11)%(2**48)
-#     lcg.previous=rn
-#     return rn
-
-# print(mm)
-#def answer(m):m
-
-# import random
-import fractions    
-def answer(m):
-
-    mm=[]
-    photonbins=[0]*len(m)
-    numphotons=100000
-    for photon in range(numphotons):
-    #     print('photonnumber:',photon)
-        photonexist=1
-        prow=0
-        while photonexist == 1:
-    #         print('photonexist?',photonexist)
-            for i, row in enumerate(m):
-    #             print('rownum:',i)
-                if prow == i:
-                    rowsum=sum(row)
-    #                 print('Rowsums:',prow,rowsum)
-                    if rowsum == 0:
-                        photonbins[i]+=1
-                        photonexist = 0
-    #                     print('photon terminated!',photon,i)
-                    else:
-                        prand=randint(1,rowsum)
-#                         x1=lcg()
-#                         print(x1)
-                        cumsum=0
-    #                     print('randint:',prand)
-                        for nextrow, j in enumerate(row):
-                            cumsum+=j
-    #                         print('cumulativesum:',row,j,cumsum)
-                            if prand <= cumsum:
-                                prow=nextrow
-    #                             print('nextrow:',i,prow,j,cumsum)
-                                break
-                else:
-                    continue
-
-
-#     print(photonbins)
-    estimates=[(i/float(numphotons)) for i in photonbins]
-
-#     print(estimates)
-
-    fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in estimates[2:len(estimates)]]
-#     print(fraclevels)
-    commonmult=0
-    for i, value in enumerate(fraclevels):
-        if i ==0:
-            commonmult=value
-        else:
-            commonmult=fractions.gcd(commonmult,value)
-
-    numerators=[i.numerator for i in fraclevels]
-
-    denommults=[commonmult.denominator/i.denominator for i in fraclevels]
-
-    finallist=[int(a*b) for a,b in zip(numerators,denommults)]
-    finallist.append(commonmult.denominator)
-    return finallist
-# print(finallist)
-print(answer(m))
