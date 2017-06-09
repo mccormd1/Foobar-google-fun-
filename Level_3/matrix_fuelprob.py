@@ -68,13 +68,24 @@ Output:
 # m=[[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 # m = [[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] 
 # m=[[0, 2, 1, 0, 0], [0, 1, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-m = [[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 4, 0, 0, 0], [0, 0, 0, 0, 0]]
+# m = [[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 0]]
+# m=[[0, 2, 1, 0, 0, 0], [0, 0, 0, 3, 4, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1]]
+# m=[[0, 0, 12, 0, 15, 0, 0, 0, 1, 8],[0, 0, 60, 0, 0, 7, 13, 0, 0, 0],[0, 15, 0, 8, 7, 0, 0, 1, 9, 0],[23, 0, 0, 0, 0, 1, 0, 0, 0, 0],[37, 35, 0, 0, 0, 0, 3, 21, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+# m=[[1, 1, 1, 0, 1, 0, 1, 0, 1, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[1, 0, 1, 1, 1, 0, 1, 0, 1, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[1, 0, 1, 0, 1, 1, 1, 0, 1, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[1, 0, 1, 0, 1, 0, 1, 1, 1, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[1, 0, 1, 0, 1, 0, 1, 0, 1, 1],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+# m=[[0, 0, 0, 0, 3, 5, 0, 0, 0, 2],[0, 0, 4, 0, 0, 0, 1, 0, 0, 0],[0, 0, 0, 4, 4, 0, 0, 0, 1, 1],[13, 0, 0, 0, 0, 0, 2, 0, 0, 0],[0, 1, 8, 7, 0, 0, 0, 1, 3, 0],[1, 7, 0, 0, 0, 0, 0, 2, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+# m=[[0, 86, 61, 189, 0, 18, 12, 33, 66, 39],[0, 0, 2, 0, 0, 1, 0, 0, 0, 0],[15, 187, 0, 0, 18, 23, 0, 0, 0, 0],[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+m=[[0]]
+# print('original',m)
+print(len(m))
 import fractions
+from copy import deepcopy
+
 ## need to define a bunch of matrix stuff.
 def matsub(A,B): #performs matrix subtraction
+    C=list(A)
     for i, row in enumerate(A):
-        A[i]=[A[i][j]-B[i][j] for j,v in enumerate(row)]
-    return A
+        C[i]=[A[i][j]-B[i][j] for j,v in enumerate(row)]
+    return C
 
 def transposeMatrix(mat):
     t = []
@@ -141,31 +152,88 @@ def matmult(A,B):
         return 0
 
 
-
-
 # def answer(m):
 
-#sort rows
+##make duplicate of list
+dupem=list(m)
+##calculate row sums (find zero rows)
 
-
-
-
-mmm=list(m)
 hrowsum=[]
-for i, row in enumerate(mmm):
-    hrowsum.append(sum(row))
+for i, row in enumerate(dupem):
+    j=[]
+    j.append(sum(row))
+    j.append(i)
+    hrowsum.append(j)
 
+# print(hrowsum)
 
+##move rows into standard form (keep track of original location)
 
-for i,row in enumerate(mmm):
-    if hrowsum[i]==0:
-        mmm.append(mmm.pop(i))
+moverowsum=list(hrowsum)
+keeprow=[]
+ki=[]
+moverow=[]
+mi=[]
+for i,row in enumerate(dupem):
+    if moverowsum[i][0]==0:
+        moverow.append(dupem[i])
+        mi.append(i)
+    else:
+        keeprow.append(dupem[i])
+        ki.append(i)
+# print('keep,move',keeprow,ki,moverow,mi)
+
+rowstandard=keeprow+moverow
+si=ki+mi
+# print(rowstandard,si)
+
+## move columns into standard form (keep track of original location)
+
+back=[]
+front=[]
+for i,row in enumerate(rowstandard):
+    fe=[]
+    be=[]
+    count=0
     for j in range(len(row)):
-        if hrowsum[j]==1:
-           mmm[i].append(mmm[i].pop(j))
+        if hrowsum[j][0]==0:
+            be.append(rowstandard[i][j])
+        else:
+            fe.append(rowstandard[i][j])
+    back.append(be)
+    front.append(fe)
+
+mmm=[]
+for row  in range(len(front)):
+    mmm.append(front[row]+back[row])
 
 
-# print(mmm)
+## create a standardized version of hrowsum
+copyhrowsum=deepcopy(hrowsum)
+moverowsum=[]
+for newi, originali in enumerate(si):
+    moverowsum.append(copyhrowsum[originali])
+
+## sets all absorbing states with loops back to itself to zero
+# for row in mmm:
+#     print(row)
+    
+for newi, originali in enumerate(si):
+    if hrowsum[originali][0]==mmm[newi][newi]:
+        mmm[newi][newi]=0
+        moverowsum[newi][0]=0
+
+    
+## sets all absorbing states with loops back to itself to zero
+# for row in mmm:
+#     print(row)
+    
+for newi, originali in enumerate(si):
+    if hrowsum[originali][0]==mmm[newi][newi]:
+        mmm[newi][newi]=0
+
+
+    
 
 mm=[]   #convert into percentages
 for row in mmm:
@@ -178,13 +246,12 @@ for row in mmm:
             rowprob.append((float(i)/rowsum))
     
     mm.append(rowprob)
-    
-
 
 # print(mm)
 ##first create absorbing states by setting self referencing value in full zero rows to 1
 Imark=[None]*len(m)
 Qmark=[None]*len(m)
+sumqmark=0
 for i, row in enumerate(mm):
     rowsum=sum(row)
 #     print(rowsum)
@@ -195,11 +262,13 @@ for i, row in enumerate(mm):
         
     else:
         Qmark[i]=1
+        sumqmark+=1
+# print(sumqmark)
+# print ('help',mm,Qmark,sumqmark,Imark)
 
-# print (mm,Qmark,Imark)
 
-
-
+# for row in mm:
+#     print(row)
 ## list should be a version of the standard form p=[Q, R],[0 It] 
 # '''
 # [
@@ -235,21 +304,24 @@ for i in range(Qmark.count(1)):
 ## the fundamental matrix F=(I-Q)^-1, lets get I-Q first. different I than above.
 
 IQ=matsub(I,Q)
+# print(I)
 F=getMatrixInverse(IQ)  #invert the matrix
 # print(F)
 
 FR=matmult(F,R) #matmultiply F by R
+# print(FR)
 if FR ==0:
     pass
-#     return 0 THIS NEEDS TO BE THERE FOR SOME FUCKING REASON
+#     return 0 #THIS NEEDS TO BE THERE FOR SOME REASON
 else:
     k=FR[0]
 # print(k,len(FR),len(FR[0]))
 
 #     fraclevels=[fractions.Fraction(i).limit_denominator(27) for i in FR[0]]
+# print(k)
 fraclevels=[]
 for i in FR[0]:
-    fraclevels.append(fractions.Fraction(i).limit_denominator(27))
+    fraclevels.append(fractions.Fraction(i).limit_denominator(100))
     
 # print(fraclevels)
 
@@ -261,16 +333,62 @@ for i, value in enumerate(fraclevels):
         commonmult=fractions.gcd(commonmult,value)
     
 numerators=[i.numerator for i in fraclevels]
-
 denommults=[commonmult.denominator/i.denominator for i in fraclevels]
+interlist=[int(a*b) for a,b in zip(numerators,denommults)]
 
-finallist=[int(a*b) for a,b in zip(numerators,denommults)]
-if len(finallist
+# print(interlist)
 
-finallist.append(commonmult.denominator)
+##now we gotta get it back into the original shape
 
+## turn into a full list of end numerators
+finallist=[]
+count=0
+for i in range(len(moverowsum)):
+    if moverowsum[i][0]==0:
+        finallist.append(interlist[count])
+        count+=1
+    elif moverowsum[i][0]!=0:
+        finallist.append(0)
+print('hrowcheck:',moverowsum,finallist)
+print(sumqmark)
 
-print(finallist,hrowsum)
+##turn back into original order
+standardlist=list(finallist)
+# standardlist=[0]*len(finallist)
+# for inew, ioriginal in enumerate(si):
+#     print(inew,ioriginal)
+#     standardlist[inew]=(finallist[ioriginal])
+
+print(standardlist,si)
+
+## chop off non absorbing states
+anslist=standardlist[sumqmark:len(standardlist)]
+## chop off states that are not absorbing states
+# flist=list(finallist)
+# for i, v in enumerate(moverowsum):
+# #     print(mmm[i])
+#     flist[i]=finallist[v[1]]
+#     
+# ##NEED TO GET THIS TO FLIP THINGS TO THE ORIGINAL ORDER.
+# print('moverowcheck:',moverowsum,flist,finallist)
+# fflist=[]
+# for i in range(len(hrowsum)):
+# 
+#     if hrowsum[i][0]==0:
+#         fflist.append(flist[i])
+    
+# for i in range(len(compare)):
+#     if compare[i][0]==0:
+#         flist.append(interlist[count])
+#         count+=1
+#     elif compare[i][0]!=0:
+#         flist.append(0)
+
+anslist.append(commonmult.denominator)
+
+print(anslist)
+# print(fflist)
+
 # return finallist
 
-# print(answer(m))
+# (answer(m))
